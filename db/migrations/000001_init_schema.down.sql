@@ -1,0 +1,3 @@
+DROP TABLE "transfers" CASCADE;
+DROP TABLE "entries" CASCADE;
+DROP TABLE "accounts" CASCADE;
