@@ -8,3 +8,19 @@ INSERT INTO "accounts" (
     $2,
     $3
 ) RETURNING *;
+
+-- name: GetAccount :one
+SELECT * from "accounts" where id = $1 LIMIT 1;
+
+-- name: ListAccounts :many
+SELECT from "accounts" ORDER BY id 
+LIMIT $1
+OFFSET $1;
+
+-- name: UpdateAccount :one
+UPDATE accounts SET balance = $2 
+WHERE id = $1
+RETURNING *;
+
+-- name: DeleteAccount :exec
+DELETE from accounts WHERE id = $1;
