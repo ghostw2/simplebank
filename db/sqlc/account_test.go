@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	utilsdb "menribardhi/micro-go-psql/utils"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +11,7 @@ import (
 func createRandomAccount(t *testing.T, queries *Queries, ctx context.Context) Account {
 	args := CreateAccountParams{
 		Owner:    utilsdb.RandomString(5),
-		Balance:  utilsdb.RandomString(3),
+		Balance:  int64(utilsdb.RandomInt(0, 900)),
 		Currency: utilsdb.RandomString(4),
 	}
 	account, err := queries.CreateAccount(ctx, args)
@@ -30,7 +29,7 @@ func TestUpdateAccount(t *testing.T) {
 func updateAccountWithId(t *testing.T, id int64) {
 	args := UpdateAccountParams{
 		ID:      id,
-		Balance: strconv.Itoa(utilsdb.RandomInt(0, 30000)),
+		Balance: int64(utilsdb.RandomInt(0, 30000)),
 	}
 	updatedAccount, err := testQueries.UpdateAccount(context.Background(), args)
 	assert.Nil(t, err)
