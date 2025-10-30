@@ -28,8 +28,8 @@ func retriveTransfers_test(t *testing.T) []Transfer {
 
 func TestCreateTransfer(t *testing.T) {
 
-	account1 := createRandomAccount(t, testQueries, context.Background())
-	account2 := createRandomAccount(t, testQueries, context.Background())
+	account1 := CreateRandomAccount(t, testQueries, context.Background())
+	account2 := CreateRandomAccount(t, testQueries, context.Background())
 	args := CreateTransferParams{
 		FromAccountID: account1.ID,
 		ToAccountID:   account2.ID,
@@ -43,8 +43,8 @@ func TestCreateTransfer(t *testing.T) {
 func TestCreateManyTransfers(t *testing.T) {
 	intial := retriveTransfers_test(t)
 	var count = 3
-	account1 := createRandomAccount(t, testQueries, context.Background())
-	account2 := createRandomAccount(t, testQueries, context.Background())
+	account1 := CreateRandomAccount(t, testQueries, context.Background())
+	account2 := CreateRandomAccount(t, testQueries, context.Background())
 	for range count {
 		args := CreateTransferParams{
 			FromAccountID: account1.ID,
@@ -68,8 +68,8 @@ func TestTransferDeletion(t *testing.T) {
 	var transfer Transfer
 	var err error
 
-	account1 := createRandomAccount(t, testQueries, context.Background())
-	account2 := createRandomAccount(t, testQueries, context.Background())
+	account1 := CreateRandomAccount(t, testQueries, context.Background())
+	account2 := CreateRandomAccount(t, testQueries, context.Background())
 	for range count {
 		args := CreateTransferParams{
 			FromAccountID: account1.ID,

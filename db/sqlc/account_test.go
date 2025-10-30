@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createRandomAccount(t *testing.T, queries *Queries, ctx context.Context) Account {
+func CreateRandomAccount(t *testing.T, queries *Queries, ctx context.Context) Account {
 	args := CreateAccountParams{
 		Owner:    utilsdb.RandomString(5),
 		Balance:  int64(utilsdb.RandomInt(0, 900)),
@@ -20,10 +20,10 @@ func createRandomAccount(t *testing.T, queries *Queries, ctx context.Context) Ac
 	return account
 }
 func TestCreateAccount(t *testing.T) {
-	createRandomAccount(t, testQueries, context.Background())
+	CreateRandomAccount(t, testQueries, context.Background())
 }
 func TestUpdateAccount(t *testing.T) {
-	createdAccount := createRandomAccount(t, testQueries, context.Background())
+	createdAccount := CreateRandomAccount(t, testQueries, context.Background())
 	updateAccountWithId(t, createdAccount.ID)
 }
 func updateAccountWithId(t *testing.T, id int64) {
@@ -37,7 +37,7 @@ func updateAccountWithId(t *testing.T, id int64) {
 	assert.Equal(t, args.Balance, updatedAccount.Balance)
 }
 func TestDeleteAccount(t *testing.T) {
-	account := createRandomAccount(t, testQueries, context.Background())
+	account := CreateRandomAccount(t, testQueries, context.Background())
 	deleteAccountbyId(t, account.ID)
 }
 

@@ -10,25 +10,29 @@ import (
 )
 
 var testQueries *Queries
-var testpool *pgxpool.Pool
+var testPool *pgxpool.Pool
+var testStore *Store
 
 func TestMain(m *testing.M) {
-
+	var err error
 	dbUrl := "postgres://postgres:passwrod123@localhost:5432/simplebank?sslmode=disable"
 	ctx := context.Background()
-	testpool, err := pgxpool.New(ctx, dbUrl)
+	testPool, err = pgxpool.New(ctx, dbUrl)
 	if err != nil {
 		log.Fatalf("Unable to ping db err:%v", err)
 	}
-	defer testpool.Close()
-
-	testQueries = New(testpool)
+	defer testPool.Close()
+	testStore = NewStore(testPool)
+	if testStore.db == nil {
+		log.Panic("something went wrong")
+	}
+	testQueries = New(testPool)
 	if testQueries == nil {
 		log.Println("something went wrong")
 	}
 	log.Println("Database connected for tests")
 	code := m.Run()
-	testpool.Close()
+	testPool.Close()
 
 	os.Exit(code)
 

@@ -18,7 +18,7 @@ func createRandomEntry(t *testing.T, args CreateEntryParams) Entry {
 	return createdEntry
 }
 func TestCreateEntry(t *testing.T) {
-	Account := createRandomAccount(t, testQueries, context.Background())
+	Account := CreateRandomAccount(t, testQueries, context.Background())
 	createRandomEntry(t, CreateEntryParams{
 		AccountID: Account.ID,
 		Amount:    int64(utilsdb.RandomInt(0, 900)),
@@ -34,7 +34,7 @@ func retriveEntries(t *testing.T) []ListEntriesRow {
 func TestCreateManyEntries(t *testing.T) {
 	intialEntries := retriveEntries(t)
 	var count = 3
-	account := createRandomAccount(t, testQueries, context.Background())
+	account := CreateRandomAccount(t, testQueries, context.Background())
 	for range count {
 		testQueries.CreateEntry(context.Background(), CreateEntryParams{
 			AccountID: account.ID,
@@ -55,7 +55,7 @@ func deleteEntry_test(t *testing.T, id int64) {
 
 func TestEntryDeletion(t *testing.T) {
 	var count = 3
-	account := createRandomAccount(t, testQueries, context.Background())
+	account := CreateRandomAccount(t, testQueries, context.Background())
 
 	intialEntries := retriveEntries(t)
 	var entries []Entry
