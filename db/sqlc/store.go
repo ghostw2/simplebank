@@ -76,26 +76,48 @@ func (store *Store) Transfer(ctx context.Context, args TransferTxParam) (Transfe
 		if err != nil {
 			return err
 		}
-		result.FromAccount, err = q.UpdateAccount(ctx,
-			UpdateAccountParams{
-				ID:      args.FromAccountID,
-				Balance: fromAccount.Balance - args.Amount,
-			})
-		if err != nil {
-			return err
-		}
-		//add from secodnd account
 		toAccount, err := q.GetAccount(ctx, args.ToAccountID)
 		if err != nil {
 			return err
 		}
-		result.ToAccount, err = q.UpdateAccount(ctx,
-			UpdateAccountParams{
-				ID:      args.ToAccountID,
-				Balance: toAccount.Balance + args.Amount,
-			})
-		if err != nil {
-			return err
+		if fromAccount.ID < toAccount.ID {
+
+			//add from secodnd account
+			err = q.AddBalance(ctx,
+				AddBalanceParams{
+					Balance: -args.Amount,
+					ID:      args.FromAccountID,
+				})
+			if err != nil {
+				return err
+			}
+
+			err = q.AddBalance(ctx,
+				AddBalanceParams{
+					ID:      args.ToAccountID,
+					Balance: args.Amount,
+				})
+			if err != nil {
+				return err
+			}
+		} else {
+			err = q.AddBalance(ctx,
+				AddBalanceParams{
+					ID:      args.ToAccountID,
+					Balance: args.Amount,
+				})
+			if err != nil {
+				return err
+			}
+			//add from secodnd account
+			err = q.AddBalance(ctx,
+				AddBalanceParams{
+					Balance: -args.Amount,
+					ID:      args.FromAccountID,
+				})
+			if err != nil {
+				return err
+			}
 		}
 		//entry 1
 		result.FromEntry, err = q.CreateEntry(ctx,

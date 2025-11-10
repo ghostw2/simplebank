@@ -91,4 +91,5 @@ func TestTransferDeletion(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Equal(t, entry.ID, int64(0))
 	}
+
 }

@@ -18,3 +18,4 @@ SELECT * from "transfers" WHERE id = $1 LIMIT 1;
 
 -- name: DeleteTransfer :exec
 DELETE from "transfers" where id = $1;
+

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	utilsdb "menribardhi/micro-go-psql/utils"
 	"testing"
 
@@ -16,6 +17,7 @@ func CreateRandomAccount(t *testing.T, queries *Queries, ctx context.Context) Ac
 	}
 	account, err := queries.CreateAccount(ctx, args)
 	assert.Nil(t, err)
+	fmt.Println(account.Owner)
 	assert.Equal(t, args.Owner, account.Owner)
 	return account
 }
