@@ -10,6 +10,23 @@ on :
 
 jobs :
   build:
+
+    sevices: 
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: passwrod
+          POSTGRES_DB: simplebank
+
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     runs-on: ubuntu-latest
    
     steps : 
@@ -24,6 +41,16 @@ jobs :
       - name: Display go version
         run : go version
 
+      - name: Install golang-migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/bin/migrate
+          which migrate  
+      - name: Run migrations
+        run: make migrateup
+        env:
+          DB_URL: postgresql://postgres:postgres@localhost:5432/simplebank?sslmode=disable
+      
       - name: Install dependencies 
         run : go mod download
 
@@ -37,4 +64,5 @@ jobs :
         run: |
           go install golang.org/x/lint/golint@latest
           golint ./...  
+          
           
