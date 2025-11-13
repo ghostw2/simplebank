@@ -13,7 +13,7 @@ INSERT INTO "accounts" (
 SELECT * from "accounts" where id = $1 LIMIT 1;
 
 -- name: ListAccounts :many
-SELECT from "accounts" ORDER BY id 
+SELECT * from "accounts" ORDER BY id 
 LIMIT $1
 OFFSET $2;
 

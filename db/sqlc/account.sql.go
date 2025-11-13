@@ -98,7 +98,7 @@ func (q *Queries) GetAccountFormUpdate(ctx context.Context, id int64) (Account, 
 }
 
 const listAccounts = `-- name: ListAccounts :many
-SELECT from "accounts" ORDER BY id 
+SELECT id, owner, balance, currency, created_at from "accounts" ORDER BY id 
 LIMIT $1
 OFFSET $2
 `
@@ -108,19 +108,22 @@ type ListAccountsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-type ListAccountsRow struct {
-}
-
-func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]ListAccountsRow, error) {
+func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error) {
 	rows, err := q.db.Query(ctx, listAccounts, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListAccountsRow
+	items := []Account{}
 	for rows.Next() {
-		var i ListAccountsRow
-		if err := rows.Scan(); err != nil {
+		var i Account
+		if err := rows.Scan(
+			&i.ID,
+			&i.Owner,
+			&i.Balance,
+			&i.Currency,
+			&i.CreatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
