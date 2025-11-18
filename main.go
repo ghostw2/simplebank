@@ -5,14 +5,22 @@ import (
 	"fmt"
 	"log"
 	api "menribardhi/micro-go-psql/api"
+	"menribardhi/micro-go-psql/config"
 	db "menribardhi/micro-go-psql/db/sqlc"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
+
 	var err error
-	dbUrl := "postgres://postgres:passwrod123@localhost:5432/simplebank?sslmode=disable"
+	con, err := config.ReadConfig("./")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(con)
+
+	dbUrl := con.DbUrl
 	ctx := context.Background()
 	pool, err := pgxpool.New(ctx, dbUrl)
 	if err != nil {
@@ -20,7 +28,7 @@ func main() {
 	}
 	store := db.NewStore(pool)
 	server := api.NewServer(store)
-	adress := "0.0.0.0:8084"
+	adress := con.AppAdress
 	err = server.Start(adress)
 	if err != nil {
 		log.Fatalf("could not start server at port ")

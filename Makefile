@@ -10,5 +10,7 @@ sqlc:
 	sqlc generate
 server:
 	go run main.go
+mock :
+	mockgen -package mockdb -destination db/mock/store.go  menribardhi/micro-go-psql/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc server
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc server mock

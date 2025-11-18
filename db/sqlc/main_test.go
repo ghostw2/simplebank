@@ -11,7 +11,7 @@ import (
 
 var testQueries *Queries
 var testPool *pgxpool.Pool
-var testStore *Store
+var testStore Store
 
 func TestMain(m *testing.M) {
 	var err error
@@ -23,13 +23,13 @@ func TestMain(m *testing.M) {
 	}
 	defer testPool.Close()
 	testStore = NewStore(testPool)
-	if testStore.db == nil {
-		log.Panic("something went wrong")
-	}
+	// if testStore.db == nil {
+	// 	log.Panic("something went wrong")
+	// }
 	testQueries = New(testPool)
-	if testQueries == nil {
-		log.Println("something went wrong")
-	}
+	// if testQueries == nil {
+	// 	log.Println("something went wrong")
+	// }
 	log.Println("Database connected for tests")
 	code := m.Run()
 	testPool.Close()

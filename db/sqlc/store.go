@@ -8,19 +8,36 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Store struct {
+type Store interface {
+	Querier
+	Transfer(ctx context.Context, args TransferTxParam) (TransferTxResult, error)
+}
+type SQLStore struct {
 	*Queries
 	db *pgxpool.Pool
 }
 
-func NewStore(db *pgxpool.Pool) *Store {
-	return &Store{
+func NewStore(db *pgxpool.Pool) Store {
+	return &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
-func (store *Store) ExecTx(ctx context.Context, fn func(*Queries) error) error {
+type TransferTxParam struct {
+	FromAccountID int64 `json:"from_account_id"`
+	ToAccountID   int64 `json:"to_account_id"`
+	Amount        int64 `json:"amount"`
+}
+type TransferTxResult struct {
+	Transfer    Transfer `json:"transfer"`
+	FromAccount Account  `json:"from_account"`
+	ToAccount   Account  `json:"to_account"`
+	FromEntry   Entry    `json:"from_entry"`
+	ToEntry     Entry    `json:"to_entry"`
+}
+
+func (store *SQLStore) ExecTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, pgx.TxOptions{
 		IsoLevel: pgx.ReadCommitted,
 	})
@@ -38,20 +55,7 @@ func (store *Store) ExecTx(ctx context.Context, fn func(*Queries) error) error {
 	return tx.Commit(ctx)
 }
 
-type TransferTxParam struct {
-	FromAccountID int64 `json:"from_account_id"`
-	ToAccountID   int64 `json:"to_account_id"`
-	Amount        int64 `json:"amount"`
-}
-type TransferTxResult struct {
-	Transfer    Transfer `json:"transfer"`
-	FromAccount Account  `json:"from_account"`
-	ToAccount   Account  `json:"to_account"`
-	FromEntry   Entry    `json:"from_entry"`
-	ToEntry     Entry    `json:"to_entry"`
-}
-
-func (store *Store) anotherExecTx(ctx context.Context, fn func(*Queries) error) error {
+func (store *SQLStore) anotherExecTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -67,7 +71,7 @@ func (store *Store) anotherExecTx(ctx context.Context, fn func(*Queries) error) 
 	return tx.Commit(ctx)
 }
 
-func (store *Store) Transfer(ctx context.Context, args TransferTxParam) (TransferTxResult, error) {
+func (store *SQLStore) Transfer(ctx context.Context, args TransferTxParam) (TransferTxResult, error) {
 	//deduct from first account
 	var result TransferTxResult
 	err := store.ExecTx(ctx, func(q *Queries) error {
